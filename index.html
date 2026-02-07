@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,33 +10,148 @@
             margin: 0;
             padding: 20px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             background-color: #f0f0f0;
             font-family: Arial, sans-serif;
         }
+
         main {
             text-align: center;
         }
+
         canvas {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #0074c1;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #005a9e;
+        }
+
+        button.active {
+            background: #005a9e;
+            border: 2px solid #003f6d;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 10px;
+            background: #fff;
+            border-radius: 4px;
+            max-width: 600px;
+            text-align: left;
         }
     </style>
 </head>
+
 <body>
     <main>
-        <h1>Line Rasterization Test</h1>
-        <p>Drag the endpoints to test the algorithm</p>
+        <h1>Rasterization Algorithms</h1>
+        <p>Drag the endpoints to test different algorithms</p>
+
+        <div class="controls">
+            <button id="bresenhamBtn">Bresenham Line</button>
+            <button id="ddaBtn">DDA Line</button>
+            <button id="wuBtn">Wu's Line</button>
+            <button id="circleBtn">Midpoint Circle</button>
+        </div>
+
+        <div class="controls">
+            <select id="circleMode">
+                <option value="diameter">Circle by Diameter (drag endpoints)</option>
+                <option value="center">Circle by Center (first point is center)</option>
+            </select>
+        </div>
+
+        <div id="canvas-container"></div>
+
+        <div class="info">
+            <h3>Current Algorithm: <span id="currentAlgo">Bresenham Line</span></h3>
+            <p>Endpoints: (<span id="point1">10, 10</span>) and (<span id="point2">40, 35</span>)</p>
+            <p>Points generated: <span id="pointCount">2</span></p>
+        </div>
     </main>
-    
+
     <!-- Import p5.js from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
-    
-    <!-- Import the rasterizer implementation -->
+
+    <!-- Import all rasterizer implementations -->
     <script src="BresenhamRasterizer.js"></script>
-    
+    <script src="DDARasterizer.js"></script>
+    <script src="WuRasterizer.js"></script>
+    <script src="MidpointCircleRasterizer.js"></script>
+
     <!-- Import the main sketch -->
     <script src="LineRasterizerTest.js"></script>
+
+    <script>
+        // Control logic
+        document.getElementById('bresenhamBtn').addEventListener('click', () => {
+            setActiveButton('bresenham');
+            if (window.switchAlgorithm) window.switchAlgorithm('bresenham');
+        });
+        document.getElementById('ddaBtn').addEventListener('click', () => {
+            setActiveButton('dda');
+            if (window.switchAlgorithm) window.switchAlgorithm('dda');
+        });
+        document.getElementById('wuBtn').addEventListener('click', () => {
+            setActiveButton('wu');
+            if (window.switchAlgorithm) window.switchAlgorithm('wu');
+        });
+        document.getElementById('circleBtn').addEventListener('click', () => {
+            setActiveButton('circle');
+            if (window.switchAlgorithm) window.switchAlgorithm('circle');
+        });
+
+        function setActiveButton(algo) {
+            // Remove active class from all buttons
+            document.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Add active class to clicked button
+            document.getElementById(`${algo}Btn`).classList.add('active');
+
+            // Update algorithm name
+            const algoNames = {
+                'bresenham': 'Bresenham Line',
+                'dda': 'DDA Line',
+                'wu': "Wu's Line (Anti-aliasing)",
+                'circle': 'Midpoint Circle'
+            };
+            document.getElementById('currentAlgo').textContent = algoNames[algo];
+        }
+
+        // Initialize
+        document.getElementById('bresenhamBtn').classList.add('active');
+    </script>
 </body>
+
 </html>
